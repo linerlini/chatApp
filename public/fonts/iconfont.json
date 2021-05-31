@@ -1,0 +1,79 @@
+{
+  "id": "2476848",
+  "name": "social",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "1137427",
+      "name": "允许",
+      "font_class": "yunxu",
+      "unicode": "e648",
+      "unicode_decimal": 58952
+    },
+    {
+      "icon_id": "10299097",
+      "name": "已拒绝",
+      "font_class": "yijujue",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "4933412",
+      "name": "添加好友",
+      "font_class": "tianjiahaoyou",
+      "unicode": "e75c",
+      "unicode_decimal": 59228
+    },
+    {
+      "icon_id": "6536712",
+      "name": "列表",
+      "font_class": "liebiao",
+      "unicode": "e659",
+      "unicode_decimal": 58969
+    },
+    {
+      "icon_id": "10468864",
+      "name": "信息",
+      "font_class": "icon-test",
+      "unicode": "e63e",
+      "unicode_decimal": 58942
+    },
+    {
+      "icon_id": "9306971",
+      "name": "更多",
+      "font_class": "gengduo",
+      "unicode": "e610",
+      "unicode_decimal": 58896
+    },
+    {
+      "icon_id": "36019",
+      "name": "friend",
+      "font_class": "friend",
+      "unicode": "e6cc",
+      "unicode_decimal": 59084
+    },
+    {
+      "icon_id": "15066934",
+      "name": "find",
+      "font_class": "find",
+      "unicode": "e6ac",
+      "unicode_decimal": 59052
+    },
+    {
+      "icon_id": "20387679",
+      "name": "find",
+      "font_class": "find1",
+      "unicode": "e602",
+      "unicode_decimal": 58882
+    },
+    {
+      "icon_id": "588729",
+      "name": "跳过",
+      "font_class": "tiaoguo",
+      "unicode": "e6fb",
+      "unicode_decimal": 59131
+    }
+  ]
+}

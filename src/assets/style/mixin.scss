@@ -1,0 +1,17 @@
+// 不换行
+@mixin no-wrap {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+@mixin juzhong {
+  transform: translate(-50%, -50%);
+  left: 50%;
+  top: 50%;
+  position: absolute;
+}
+@mixin circle($width, $height) {
+  width: $width;
+  height: $height;
+  border-radius: 50%; 
+}

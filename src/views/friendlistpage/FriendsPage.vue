@@ -1,0 +1,99 @@
+<template>
+  <div class="friend-page-wrapper">
+    <star-space/>
+    <div class="planets">
+      <planet-with-star-ring class="planet-with-star-ring"/>
+      <planet-with-star-ring class="planet-with-star-ring"/>
+      <planet-with-star-ring class="planet-with-star-ring"/>
+      <planet-with-star-ring class="planet-with-star-ring"/>
+      <planet-with-star-ring class="planet-with-star-ring"/>
+    </div>
+    <current-page
+      :show-func-page="showFuncPage"
+      :current-func-page="currentFuncPage"
+      @hidden-func-page="changeFuncPageShow"
+    ></current-page>
+    <button-switch class="func-buttons" @show-func-page="changeFuncPageShow"/>
+  </div>
+</template>
+
+<script>
+import { ref } from 'vue';
+import StarSpace from 'components/common/StarSpace.vue';
+import PlanetWithStarRing from 'components/common/planet/PlantWithStarRing.vue';
+import ButtonSwitch from 'components/common/ButtonSwitch.vue';
+import { funcName } from '@/config';
+import CurrentPage from './children/CurrentPage.vue';
+
+export default {
+  components: {
+    StarSpace,
+    PlanetWithStarRing,
+    ButtonSwitch,
+    CurrentPage,
+  },
+  props: {},
+  data() {
+    return {
+    };
+  },
+  watch: {},
+  computed: {},
+  methods: {},
+  created() {},
+  mounted() {},
+  setup() {
+    const currentFuncPage = ref(funcName.ALL_FRIEND_PAGE);
+    const showFuncPage = ref(false);
+
+    function changeFuncPageShow(exists, pageName) {
+      if (!exists) {
+        showFuncPage.value = false;
+        return;
+      }
+      showFuncPage.value = true;
+      currentFuncPage.value = pageName;
+    }
+    return {
+      showFuncPage,
+      currentFuncPage,
+      changeFuncPageShow,
+    };
+  },
+};
+</script>
+<style lang="scss" scoped>
+  .friend-page-wrapper {
+    background: linear-gradient(to bottom, #2c5364,#203a43,#002142);
+    position: relative;
+    .planet-with-star-ring {
+      position: absolute;
+      transform: scale(0.8);
+      &:nth-child(1) {
+        top: 7%;
+        left: 53%;
+      }
+      &:nth-child(2) {
+        top: 70%;
+        left: 11%;
+      }
+      &:nth-child(3) {
+        top: 49%;
+        left: 67%;
+      }
+      &:nth-child(4) {
+        top: 30%;
+        left: 20%;
+      }
+      &:nth-child(5) {
+        top: 76%;
+        left: 57%;
+      }
+    }
+    .func-buttons {
+      position: fixed;
+      right: 10px;
+      bottom: 10px;
+    }
+  }
+</style>
