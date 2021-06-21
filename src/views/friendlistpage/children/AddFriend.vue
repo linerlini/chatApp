@@ -20,7 +20,7 @@
       <ul class="pages">
         <base-user-info
           :user-info="user"
-          :show="user.result && currentPage==='find'"
+          :show="user && currentPage==='find'"
           :button-text="buttonText"
           @button-click="addFriends"
           class="page"
@@ -47,7 +47,6 @@
 <script>
 import {
   ref,
-  reactive,
   watch,
   computed,
 } from 'vue';
@@ -90,69 +89,71 @@ export default {
     const { changeCurrentPage, currentPage } = funcCart(tabArr);
     // 搜索相关
     const query = ref('');
-    const user = reactive({
-      name: '',
-      signature: '',
-      account: '',
-      status: userRelationship.STRANGE,
-      result: false,
-    });
+    const user = ref(undefined); // 搜索结果
     const searchUser = debounce(async (queryStr) => {
       const querys = Number(queryStr);
       // 搜索关键字为空
       if (!querys) {
-        user.result = false;
+        user.value = undefined;
         return;
       }
       // 如果搜索自己
       if (querys === store.state.account) {
-        user.name = store.state.name;
-        user.signature = store.state.signature;
-        user.result = true;
-        user.status = userRelationship.FRIEND;
+        user.value = {
+          name: store.state.name,
+          signature: store.state.signature,
+          status: userRelationship.FRIEND,
+          account: store.state.account,
+        };
         return;
       }
       // 如果是自己的好友或者已经发出了申请
       let isFriend = false;
-      isFriend = friends.friends.some((group) => group.some((item) => {
-        if (+item.account === querys) {
-          user.name = item.name;
-          user.signature = item.signature;
-          user.account = item.account;
-          user.status = userRelationship.FRIEND;
-          user.result = true;
-          return true;
-        }
-        return false;
-      }));
-      let isApplyFriend = false;
-      isApplyFriend = friends.friendHandleing.some((item) => {
-        if (item.account === querys) {
-          user.name = item.name;
-          user.signature = item.signature;
-          user.account = item.account;
-          user.status = item.relationship;
-          user.result = true;
+      isFriend = friends.friends.some((group) => {
+        const friend = group[querys];
+        if (friend) {
+          user.value = {
+            name: friend.name,
+            signature: friend.signature,
+            status: friend.relationship,
+            account: friend.account,
+          };
           return true;
         }
         return false;
       });
-      if (isFriend || isApplyFriend) {
+      let isApplyingFriend = false;
+      if (friends.friendHandleing[querys]) {
+        const friend = friends.friendHandleing[querys];
+        user.value = {
+          name: friend.name,
+          signature: friend.signature,
+          status: friend.relationship,
+          account: friend.account,
+        };
+        isApplyingFriend = true;
+      } else {
+        isApplyingFriend = false;
+      }
+      if (isFriend || isApplyingFriend) {
         return;
       }
       try {
         const result = await searchUserInfo(querys);
         if (result.searchResult) {
-          user.name = result.name;
-          user.signature = result.word;
-          user.account = result.account;
-          user.status = userRelationship.STRANGE;
-          user.result = true;
+          user.value = {
+            name: result.name,
+            signature: result.signature,
+            account: result.account,
+            status: userRelationship.STRANGE,
+          };
         } else {
-          user.result = false;
+          user.value = undefined;
         }
       } catch (err) {
-        user.result = false;
+        user.value = undefined;
+        errorInfo.value = '网络错误，稍后再试';
+        showType.value = dialogShowType.ERROR;
       }
     });
     const queryWatch = watch(query, (value) => {
@@ -161,7 +162,10 @@ export default {
     // 根据好友关系，计算好友信息button文本
     const buttonText = computed(() => {
       let content = '';
-      const { status } = user;
+      let status = 5;
+      if (user.value) {
+        status = user.value.status;
+      }
       switch (status) {
         case userRelationship.FRIEND:
           content = 'my friend';
@@ -194,13 +198,14 @@ export default {
       groupIndex = list[0];
       if (!isHandleFriendship) {
         apply();
-        user.status = userRelationship.APPLYING;
+        user.value.status = userRelationship.APPLYING;
       } else {
         acceptApply();
       }
       closeGroupList();
     }
     // 处理添加好友逻辑
+    const handleUserInfo = {};
     const addFriends = function func() {
       const { status } = user;
       switch (status) {
@@ -223,17 +228,19 @@ export default {
     async function apply() {
       const result = await applyAddFriend({
         account: store.state.account,
-        addAccount: user.account,
+        addAccount: user.value.account,
         name: store.state.name,
-        addName: user.name,
+        addName: user.value.name,
         group: groupIndex,
         groupname: store.state.groupNames[groupIndex],
         signature: store.state.signature,
-        friendSignature: user.signature,
+        friendSignature: user.value.signature,
       });
       if (result) {
         successInfo.value = 'add success';
         showType.value = dialogShowType.OK;
+        user.value.relationship = userRelationship.APPLYING;
+        store.dispatch('friendInfoModule/handleFriendApply', user.value);
       } else {
         errorInfo.value = 'add error';
         showType.value = dialogShowType.ERROR;
@@ -242,12 +249,12 @@ export default {
     function acceptOrReject(obj) {
       switch (obj.buttonType) {
         case handleFriendApply.REJECT: // 拒绝按钮
-          user.account = obj.account;
+          handleUserInfo.account = obj.account;
           selectInfo.value = 'are you sure?';
           showType.value = dialogShowType.SELECT;
           break;
         case handleFriendApply.ACCEPT: // 接受按钮
-          user.account = obj.account;
+          handleUserInfo.account = obj.account;
           isHandleFriendship = true;
           groupListShow.value = true;
           break;
@@ -274,7 +281,7 @@ export default {
     async function rejectApply() {
       const result = await handleFriend({
         account: store.state.account,
-        addAccount: user.account,
+        addAccount: handleUserInfo.account,
         type: 0,
       });
       if (!result) {
@@ -282,19 +289,18 @@ export default {
         showType.value = dialogShowType.ERROR;
         return;
       }
-      store.dispatch('friendInfoModule/handleFriendApply', {
+      store.dispatch('friendInfoModule/handleFriendApplyResult', {
         handleResult: userRelationship.REJECT,
-        account: user.account,
+        account: handleUserInfo.account,
       });
     }
     async function acceptApply() {
       const result = await handleFriend({
         account: store.state.account,
-        addAccount: user.account,
+        addAccount: handleUserInfo.account,
         type: 1,
         options: {
           groupIndex,
-          groupname: store.state.groupNames[groupIndex],
         },
       });
       if (!result) {
@@ -304,9 +310,10 @@ export default {
       }
       successInfo.value = 'add success';
       showType.value = dialogShowType.OK;
-      store.dispatch('friendInfoModule/handleFriendApply', {
+      store.dispatch('friendInfoModule/handleFriendApplyResult', {
         handleResult: userRelationship.FRIEND,
-        account: user.account,
+        account: handleUserInfo.account,
+        groupIndex,
       });
     }
     return {

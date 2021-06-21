@@ -11,9 +11,9 @@
     <current-page
       :show-func-page="showFuncPage"
       :current-func-page="currentFuncPage"
-      @hidden-func-page="changeFuncPageShow"
+      @hidden-func-page="hiddenFuncPage"
     ></current-page>
-    <button-switch class="func-buttons" @show-func-page="changeFuncPageShow"/>
+    <button-switch class="func-buttons" @button-click="changeFuncPageShow"/>
   </div>
 </template>
 
@@ -22,7 +22,7 @@ import { ref } from 'vue';
 import StarSpace from 'components/common/StarSpace.vue';
 import PlanetWithStarRing from 'components/common/planet/PlantWithStarRing.vue';
 import ButtonSwitch from 'components/common/ButtonSwitch.vue';
-import { funcName } from '@/config';
+import { funcName } from 'assets/js/model/constants';
 import CurrentPage from './children/CurrentPage.vue';
 
 export default {
@@ -32,32 +32,22 @@ export default {
     ButtonSwitch,
     CurrentPage,
   },
-  props: {},
-  data() {
-    return {
-    };
-  },
-  watch: {},
-  computed: {},
-  methods: {},
-  created() {},
-  mounted() {},
   setup() {
     const currentFuncPage = ref(funcName.ALL_FRIEND_PAGE);
     const showFuncPage = ref(false);
 
-    function changeFuncPageShow(exists, pageName) {
-      if (!exists) {
-        showFuncPage.value = false;
-        return;
-      }
+    function changeFuncPageShow(pageName) {
       showFuncPage.value = true;
       currentFuncPage.value = pageName;
+    }
+    function hiddenFuncPage() {
+      showFuncPage.value = false;
     }
     return {
       showFuncPage,
       currentFuncPage,
       changeFuncPageShow,
+      hiddenFuncPage,
     };
   },
 };

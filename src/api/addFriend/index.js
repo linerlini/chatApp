@@ -1,4 +1,5 @@
 import request from 'assets/js/network';
+import refreshJWT from 'assets/js/network/refreshJWT';
 
 async function searchUserInfo(query) {
   try {
@@ -10,6 +11,10 @@ async function searchUserInfo(query) {
     });
     return result;
   } catch (err) {
+    if (err.message === 'refresh JWT') {
+      await refreshJWT();
+      return searchUserInfo(query);
+    }
     return Promise.reject(err);
   }
 }
@@ -41,6 +46,19 @@ async function applyAddFriend({
       },
     });
   } catch (err) {
+    if (err.message === 'refresh JWT') {
+      await refreshJWT();
+      return applyAddFriend({
+        account,
+        addAccount,
+        name,
+        addName,
+        group,
+        groupname,
+        signature,
+        friendSignature,
+      });
+    }
     console.log(err);
   }
   return result;
@@ -64,7 +82,16 @@ async function handleFriend({
         options,
       },
     });
-  } catch {
+  } catch (err) {
+    if (err.message === 'refresh JWT') {
+      await refreshJWT();
+      return handleFriend({
+        account,
+        addAccount,
+        type,
+        options,
+      });
+    }
     flag = false;
   }
   return flag;

@@ -45,7 +45,7 @@ export default {
       default: false,
     },
     dataArr: {
-      type: Array,
+      type: [Array, Object],
       default() {
         return [];
       },

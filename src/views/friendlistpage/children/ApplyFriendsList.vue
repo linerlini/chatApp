@@ -1,17 +1,17 @@
 <template>
   <div class="friends-list-wrapper">
     <base-user-item
-      v-for="(item) in friendHandleing"
-      :key="item"
+      v-for="(value, key) in friendHandleing"
+      :key="key"
       :item-type="userItemType.USER_APPLY"
-      :user-info="item[1]"
+      :user-info="value"
       @handle-friendship="acceptOrReject"
     />
     <base-user-item
-      v-for="(item) in friendHandleRecord"
-      :key="item"
+      v-for="(value, key) in friendHandleRecord"
+      :key="key"
       :item-type="userItemType.USER_APPLY"
-      :user-info="item[1]"
+      :user-info="value"
       @handle-friendship="acceptOrReject"
     />
     <div
@@ -30,8 +30,6 @@ import { userItemType } from 'assets/js/model/constants';
 export default {
   components: {
     BaseUserItem,
-  },
-  props: {
   },
   emits: ['handle-friendship'],
   setup(props, context) {

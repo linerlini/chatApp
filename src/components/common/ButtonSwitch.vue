@@ -30,7 +30,7 @@ import { ref } from 'vue';
 import { funcName } from '@/config';
 
 export default {
-  emit: ['show-func-page'],
+  emit: ['button-click'],
   setup(props, context) {
     const active = ref(false);
     function clickHandle(event) {
@@ -44,10 +44,10 @@ export default {
           active.value = !active.value;
           break;
         case 'find':
-          context.emit('show-func-page', true, funcName.ADD_FRIEND_PAGE);
+          context.emit('button-click', funcName.ADD_FRIEND_PAGE);
           break;
         case 'friend':
-          context.emit('show-func-page', true, funcName.ALL_FRIEND_PAGE);
+          context.emit('button-click', funcName.ALL_FRIEND_PAGE);
           break;
         default:
           console.log('user');

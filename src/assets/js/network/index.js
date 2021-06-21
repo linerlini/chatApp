@@ -2,7 +2,6 @@ import axios from 'axios';
 import qs from 'qs';
 import store from 'store';
 import * as configs from '../../../config';
-import checkStatus from './checkStatus';
 
 const instance = axios.create(configs.axiosBaseOptions);
 
@@ -41,11 +40,12 @@ instance.interceptors.request.use((baseConfig) => {
 });
 
 instance.interceptors.response.use((res) => res.data, (err) => {
-  console.log(err);
   if (err.response) {
-    return Promise.reject(Object.assign(checkStatus(err.response), {
-      body: err.response.data,
-    }));
+    const { response } = err;
+    if (response.status === 401 && response.data === 'token timeout') {
+      return Promise.reject(new Error('refresh JWT'));
+    }
+    return Promise.reject(err.response);
   }
   if (
     err.code === 'ECONNABORTED' && err.message.indexOf('timeout') !== -1

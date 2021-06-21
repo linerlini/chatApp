@@ -1,5 +1,5 @@
 export default function (response) {
-  const status = response.status || -10;
+  const status = response.status || -1;
   let errorInfo = '';
   switch (status) {
     case -1:

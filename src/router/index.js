@@ -42,11 +42,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  if (!to.meta.requireAuth) {
-    next();
-    return;
-  }
-  if (store.state.loginStatus) {
+  if (!to.meta.requireAuth || store.state.loginStatus) {
     next();
   } else {
     next({

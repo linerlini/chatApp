@@ -5,12 +5,23 @@ class Friend {
     signature,
     relationship,
     chats = [],
+    groupIndex,
   }) {
     this.name = name;
     this.account = account;
     this.chats = chats;
     this.signature = signature;
     this.relationship = relationship;
+    this.groupIndex = groupIndex;
   }
 }
+Friend.createNewFriend = function createNewFriend() {
+  return new Friend({
+    name: 'hello',
+    account: 123,
+    signature: 'this is a virtual people',
+    relationship: 1,
+    groupIndex: 0,
+  });
+};
 export default Friend;

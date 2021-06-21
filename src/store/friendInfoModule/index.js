@@ -4,8 +4,8 @@ import { userRelationship } from 'assets/js/model/constants';
 const store = {
   state: {
     friends: [],
-    friendHandleRecord: [], // 已经处理的
-    friendHandleing: [], // 等待处理的
+    friendHandleRecord: {}, // 已经处理的
+    friendHandleing: {}, // 等待处理的
   },
   mutations: {
     setFriends(state, payload) {
@@ -17,61 +17,88 @@ const store = {
     setFriendHandleRecord(state, payload) {
       state.friendHandleRecord = payload;
     },
+    addFriend(state, { user, groupIndex }) {
+      state.friends[groupIndex][user.account] = new Friend({
+        groupIndex,
+        ...user,
+      });
+    },
+    addHandleRecord(state, user) {
+      state.friendHandleRecord[user.account] = user;
+    },
+    addHandleing(state, user) {
+      state.friendHandleing[user.account] = user;
+    },
   },
   actions: {
     initFriends({ commit }, payload) {
       const { groups, applyFirends } = payload;
       const formatGroups = groups.map((item) => {
-        const result = item.map((item1) => new Friend({
-          name: item1.name,
-          account: item1.account,
-          signature: item1.signature,
-          chats: [item1.lastword],
-        }));
+        const result = Object.create(null);
+        item.forEach((item1) => {
+          result[item1.account] = new Friend({
+            name: item1.name,
+            account: item1.account,
+            signature: item1.signature,
+            chats: [item1.lastword],
+            groupIndex: item1.groupIndex,
+            relationship: userRelationship.FRIEND,
+          });
+        });
         return result;
       });
-      const handleing = [];
-      const friendHandleRecord = [];
+      const handleing = Object.create(null);
+      const friendHandleRecord = Object.create(null);
       applyFirends.forEach((item) => {
         if (
           item.relationship === userRelationship.RECEIVE_APPLY
           || item.relationship === userRelationship.APPLYING
         ) {
-          handleing.push([item.account, {
+          handleing[item.account] = {
             name: item.name,
             account: item.account,
             signature: item.signature,
             relationship: item.relationship,
-          }]);
+          };
         } else {
-          friendHandleRecord.push([item.account, {
+          friendHandleRecord[item.account] = {
             name: item.name,
             account: item.account,
             signature: item.signature,
             relationship: item.relationship,
-          }]);
+          };
         }
       });
-      commit('setFriends', formatGroups);
+      console.log(formatGroups);
+      console.log(handleing);
+      console.log(friendHandleRecord);
+      commit('setFriends', formatGroups || []);
       commit('setFriendHandleing', handleing);
       commit('setFriendHandleRecord', friendHandleRecord);
     },
-    handleFriendApply({ commit, state }, payload) {
-      const { friendHandleRecord, friendHandleing } = state;
-      const newFriendHandleRecord = new Map(friendHandleRecord);
-      const newFriendHandleing = new Map(friendHandleing);
-      const user = newFriendHandleing.get(payload.account);
-      newFriendHandleing.delete(user.account);
-      user.relationship = payload.handleResult;
-      newFriendHandleRecord.set(user.account, user);
-      if (payload.handleResult === userRelationship.FRIEND) {
-        const { friends } = state;
-        commit('setFriends', [...friends, new Friend(
-          ...user,
-        )]);
+    handleFriendApplyResult({ commit, state }, { account, handleResult, groupIndex }) {
+      const { friendHandleing } = state;
+      const newFriendHandleing = { ...friendHandleing };
+      // 从申请中删除，并添加到处理记录中
+      const user = newFriendHandleing[account];
+      delete newFriendHandleing[user.account];
+      user.relationship = handleResult;
+      if (handleResult === userRelationship.FRIEND) {
+        commit('addFriend', {
+          user,
+          groupIndex,
+        });
       }
-      commit('setFriendHandleing', Array.from(newFriendHandleing));
-      commit('setFriendHandleRecord', Array.from(newFriendHandleRecord));
+      commit('addHandleRecord', user);
+      commit('setFriendHandleing', newFriendHandleing);
+    },
+    handleFriendApply({ commit, state }, user) {
+      if (state.friendHandleRecord[user.account]) {
+        const newRecord = { ...state.friendHandleRecord };
+        delete newRecord[user.account];
+        commit('setFriendHandleRecord', newRecord);
+      }
+      commit('addHandleing', user);
     },
   },
   namespaced: true,

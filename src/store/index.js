@@ -1,5 +1,6 @@
 import { createStore } from 'vuex';
 import storage from 'assets/js/tools/storage';
+import { socketStatusCode } from 'assets/js/model/constants';
 import friendInfoModule from './friendInfoModule';
 
 const store = createStore({
@@ -10,6 +11,8 @@ const store = createStore({
     groupNames: [],
     loginStatus: false,
     token: storage.get('user') && storage.get('user').token,
+    socket: null,
+    sockeStatusCode: socketStatusCode.NO_CONNECT,
   },
   mutations: {
     setLoginStatus(state, payload) {
@@ -29,6 +32,12 @@ const store = createStore({
     },
     setSignature(state, payload) {
       state.signature = payload;
+    },
+    setSocket(state, newSocket) {
+      state.socket = newSocket;
+    },
+    changeSocketStatus(state, code) {
+      state.socketStatusCode = code;
     },
   },
   actions: {

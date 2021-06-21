@@ -2,7 +2,7 @@
   <div class="list-wrapper" @click="selectItem($event), submit($event)">
     <h1 class="title">{{title}}</h1>
     <scroll :click="true" :dataArr="list" class="list">
-      <li class="list-item" v-for="(item, index) in list" :key="index" :data-index="index">
+      <li class="list-item" v-for="(item, index) in list" :key="item" :data-index="index">
         <i class="check"></i>
         <p class="content">{{item}}</p>
       </li>

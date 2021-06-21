@@ -11,7 +11,7 @@
 <script>
 import VDialog from 'components/common/Dialog.vue';
 import { computed } from 'vue';
-import { funcName } from '@/config';
+import { funcName } from 'assets/js/model/constants';
 import AddFriendPage from './AddFriend.vue';
 import MainChat from './MainChat.vue';
 
@@ -33,7 +33,7 @@ export default {
   },
   setup(props, context) {
     function hiddenFuncPage() {
-      context.emit('hidden-func-page', false);
+      context.emit('hidden-func-page');
     }
     const funcPageComponentName = computed(() => {
       switch (props.currentFuncPage) {
@@ -42,7 +42,7 @@ export default {
         case funcName.ADD_FRIEND_PAGE:
           return 'AddFriendPage';
         default:
-          return 1;
+          return 'MainChat';
       }
     });
     return {

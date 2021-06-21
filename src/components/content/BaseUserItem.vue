@@ -1,11 +1,11 @@
 <template>
-  <div class="chat-user-item-wrapper">
+  <div class="chat-user-item-wrapper" :data-account="userInfo.account">
     <div class="user-icon"><img src="~public/images/usericon.jpg" alt=""></div>
     <div class="user-chat-info">
       <p class="user-name">{{reactiveUserInfo.name}}</p>
       <p class="chat-info">{{chatInfo}}</p>
     </div>
-    <div class="user-status" @click="checkApplyRecord($event)">
+    <div class="user-status" @click.stop="checkApplyRecord($event)">
       <div class="apply" v-if="itemType === userItemType.USER_APPLY">
         <div
           class="accept button"
@@ -21,7 +21,8 @@
         >reject</div>
         <div
           class="mark not-pass"
-          v-show="userInfo.relationship === userRelationship.NOTPASS"
+          v-show="userInfo.relationship === userRelationship.NOTPASS
+            || userInfo.relationship === userRelationship.REJECT"
         >
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-yijujue"></use>
@@ -117,6 +118,7 @@ export default {
       .user-name {
         font-size: 16px;
         color: #597a96;
+        margin-bottom: 8px;
         @include no-wrap;
       }
       .chat-info {

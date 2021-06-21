@@ -41,6 +41,7 @@ import dialogFunc from 'components/content/confirmDialog/tool';
 import { dialogShowType } from 'assets/js/model/constants';
 import { login, register, loginRefresh } from 'api/loginAndSignup';
 import storage from 'assets/js/tools/storage';
+import connect from 'assets/js/network/socketIO';
 import changeLoginOrSignup from './tools/changeLoginOrSignup';
 
 export default {
@@ -66,7 +67,7 @@ export default {
     function loginSuccess({
       token,
       groups,
-      applyFirends = [],
+      applyRecords,
       groupNames,
       word,
     }) {
@@ -86,9 +87,11 @@ export default {
       });
       // 保存用户好友信息
       store.dispatch('friendInfoModule/initFriends', {
-        applyFirends,
+        applyFirends: applyRecords,
         groups,
       });
+      // 连接socket.io
+      connect(token, account.value, store);
       router.push({
         name: 'welcome',
       });
@@ -124,11 +127,16 @@ export default {
       }
       // 登录
       if (status.value === LOGIN) {
-        const result = await login(account.value, password.value);
-        if (result.loginStatus) {
-          name.value = result.name;
-          loginSuccess(result);
-        } else {
+        try {
+          const result = await login(account.value, password.value);
+          if (result.loginStatus) {
+            name.value = result.name;
+            loginSuccess(result);
+          } else {
+            loginError();
+          }
+        } catch (err) {
+          console.log(err);
           loginError();
         }
       } else { // 注册
@@ -171,6 +179,7 @@ export default {
             errorInfo.value = '登录信息验证失败，请重新登录';
           }
           showType.value = dialogShowType.ERROR;
+          storage.remove('user');
         });
     }
     onMounted(checkUserLoginedBefore);

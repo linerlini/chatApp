@@ -16,6 +16,7 @@
     "default-passive-events": "^2.0.0",
     "normalize.css": "^8.0.1",
     "qs": "^6.5.2",
+    "socket.io-client": "^4.1.2",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-0",
     "vuex": "^4.0.0-0"

@@ -23,10 +23,24 @@ const handleFriendApply = {
   WAIT: 2,
   RESULT: 3,
 };
+const funcName = {
+  ALL_FRIEND_PAGE: 0,
+  ADD_FRIEND_PAGE: 1,
+  GROUP_FRIEND_PAGE: 2,
+};
+
+const socketStatusCode = {
+  OK: 1,
+  LOGIN_IN_OTHER_DEVICE: 2,
+  CONNECT_ERROR: 3,
+  NO_CONNECT: 4,
+};
 
 export {
   userItemType,
   userRelationship,
   dialogShowType,
   handleFriendApply,
+  funcName,
+  socketStatusCode,
 };

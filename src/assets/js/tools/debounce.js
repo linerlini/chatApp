@@ -1,4 +1,4 @@
-function debounce(fn, delay = 250) {
+function debounce(fn, delay = 400) {
   let timeId = null;
   return function func(...args) {
     const context = this;

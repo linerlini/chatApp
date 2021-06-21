@@ -1,6 +1,6 @@
 <template>
   <transition name="guodu" :duration="{ enter: 1000, leave: 400 }">
-    <div class="user-info-wrapper" v-show="show" @click="buttonClickHandle">
+    <div class="user-info-wrapper" v-show="show" @click.stop="buttonClickHandle">
       <div class="bg-cover"></div>
       <div class="info">
         <div class="content">
@@ -15,6 +15,8 @@
 </template>
 
 <script>
+import Friend from 'assets/js/model/friendInfo';
+
 export default {
   components: {
   },
@@ -26,7 +28,7 @@ export default {
     userInfo: {
       type: Object,
       default() {
-        return {};
+        return Friend.createNewFriend();
       },
     },
     buttonText: {
