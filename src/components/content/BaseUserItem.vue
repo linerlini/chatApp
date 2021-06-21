@@ -2,8 +2,8 @@
   <div class="chat-user-item-wrapper" :data-account="userInfo.account">
     <div class="user-icon"><img src="~public/images/usericon.jpg" alt=""></div>
     <div class="user-chat-info">
-      <p class="user-name">{{reactiveUserInfo.name}}</p>
-      <p class="chat-info">{{chatInfo}}</p>
+      <p class="user-name">{{userInfo.name}}</p>
+      <p class="chat-info">{{chatInfo.message}}</p>
     </div>
     <div class="user-status" @click.stop="checkApplyRecord($event)">
       <div class="apply" v-if="itemType === userItemType.USER_APPLY">
@@ -37,12 +37,16 @@
           </svg>
         </div>
       </div>
+      <div class="message" v-if="itemType === userItemType.USER_MESSAGE">
+        <p class="message-time">{{chatInfo.createTime}}</p>
+        <p class="not-accept-message-account"></p>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { reactive, computed } from 'vue';
+import { computed } from 'vue';
 import { userItemType, userRelationship, handleFriendApply } from 'assets/js/model/constants';
 
 export default {
@@ -58,10 +62,12 @@ export default {
   },
   emits: ['handle-friendship'],
   setup(props, context) {
-    const reactiveUserInfo = reactive(props.userInfo);
-    const lastWord = computed(() => reactiveUserInfo.chats[reactiveUserInfo.chats.length - 1]);
-    const chatInfo = computed(() => (props.itemType === userItemType.USER_MESSAGE
-      ? lastWord.value : reactiveUserInfo.signature));
+    const chatInfo = computed(() => {
+      if (props.itemType === userItemType.USER_MESSAGE) {
+        return props.userInfo.chats[props.userInfo.chats.length - 1];
+      }
+      return props.userInfo.signature;
+    });
     // 接受或者拒绝好友申请
     function checkApplyRecord(event) {
       const target = event.target.closest('.apply > div');
@@ -86,7 +92,6 @@ export default {
       });
     }
     return {
-      reactiveUserInfo,
       chatInfo,
       userRelationship,
       userItemType,

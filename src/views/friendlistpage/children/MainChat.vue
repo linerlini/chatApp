@@ -34,13 +34,30 @@
             :user-info="value"
           />
         </div>
-        <div class="chat-list" v-show="currentPage === 'message'"></div>
+        <div class="chat-list" v-show="currentPage === 'message'">
+          <base-user-item
+            v-for="(item) in chats.notHasAcceptRecord"
+            :key="item.account"
+            :user-info="item"
+            :item-type="userItemType.USER_MESSAGE"
+          />
+          <base-user-item
+            v-for="(item) in chats.hasAcceptRecord"
+            :key="item.account"
+            :user-info="item"
+            :item-type="userItemType.USER_MESSAGE"
+          />
+        </div>
       </scroll>
-      <base-user-info
-        :show="showFriendInfoCard"
-        :user-info="currentFriendInfoCard"
-      />
-      <search-box class="search"/>
+      <div class="user-info-card">
+        <base-user-info
+          :show="showFriendInfoCard && currentPage === 'friend'"
+          :user-info="currentFriendInfoCard"
+          button-text="send message"
+        />
+        <div class="user-link" v-show="showFriendInfoCard && currentPage === 'friend'"></div>
+      </div>
+      <search-box class="search" v-show="!showFriendInfoCard"/>
     </div>
   </div>
 </template>
@@ -53,6 +70,7 @@ import BaseUserInfo from 'components/content/BaseUserInfo.vue';
 import SearchBox from 'components/common/SearchBox.vue';
 import { useStore } from 'vuex';
 import { computed, ref } from 'vue';
+import { userItemType } from 'assets/js/model/constants';
 import funcCart from '../utils/funcCart';
 
 export default {
@@ -76,7 +94,22 @@ export default {
       });
       return result;
     });
-    const chats = computed(() => []);
+    const chats = computed(() => {
+      const hasAcceptRecord = [];
+      const notHasAcceptRecord = [];
+      Object.keys(friends.value).forEach((key) => {
+        const friendChats = friends.value[key].chats;
+        if (!friendChats.length) {
+          return;
+        }
+        if (friends.value[key].notAcceptWordCount) {
+          notHasAcceptRecord.push(friends.value[key]);
+        } else {
+          hasAcceptRecord.push(friends.value[key]);
+        }
+      });
+      return { hasAcceptRecord, notHasAcceptRecord };
+    });
     // 用于切换tab时刷新scroll
     const showValue = computed(() => (currentPage.value === 'friend' ? friends : chats));
     // 好友资料卡相关
@@ -94,15 +127,18 @@ export default {
       console.log(currentFriendInfoCard.value);
       showFriendInfoCard.value = true;
     }
+    // 搜索相关
     return {
       tabArr,
       changeCurrentPage,
       currentPage,
       friends,
+      chats,
       showValue,
       openFriendInfoCard,
       showFriendInfoCard,
       currentFriendInfoCard,
+      userItemType,
     };
   },
 };
@@ -151,6 +187,12 @@ export default {
       .user-list {
         flex: 1;
         overflow: hidden;
+      }
+      .user-info-card {
+        .user-link {
+          display: flex;
+          justify-content: space-around;
+        }
       }
     }
   }

@@ -1,4 +1,5 @@
 import Friend from 'assets/js/model/friendInfo';
+import FriendChat from 'assets/js/model/friendChat';
 import { userRelationship } from 'assets/js/model/constants';
 
 const store = {
@@ -40,7 +41,8 @@ const store = {
             name: item1.name,
             account: item1.account,
             signature: item1.signature,
-            chats: [item1.lastword],
+            chats: [new FriendChat({ message: item1.lastword })],
+            notAcceptWordCount: item1.notAcceptWordCount,
             groupIndex: item1.groupIndex,
             relationship: userRelationship.FRIEND,
           });
