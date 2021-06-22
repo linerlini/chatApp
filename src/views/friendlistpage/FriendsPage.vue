@@ -18,7 +18,8 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
+import { useStore } from 'vuex';
 import StarSpace from 'components/common/StarSpace.vue';
 import PlanetWithStarRing from 'components/common/planet/PlantWithStarRing.vue';
 import ButtonSwitch from 'components/common/ButtonSwitch.vue';
@@ -33,6 +34,7 @@ export default {
     CurrentPage,
   },
   setup() {
+    const store = useStore();
     const currentFuncPage = ref(funcName.ALL_FRIEND_PAGE);
     const showFuncPage = ref(false);
 
@@ -43,6 +45,18 @@ export default {
     function hiddenFuncPage() {
       showFuncPage.value = false;
     }
+    // 聊天相关
+    let temPoraryClose = false;
+    watch(() => store.state.friendChatModule.isShowChatCard, (value) => {
+      if (value) {
+        temPoraryClose = showFuncPage.value;
+        hiddenFuncPage();
+        return;
+      }
+      if (temPoraryClose) {
+        showFuncPage.value = true;
+      }
+    });
     return {
       showFuncPage,
       currentFuncPage,

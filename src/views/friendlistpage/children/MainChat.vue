@@ -20,12 +20,11 @@
       <scroll
         :data-arr="showValue"
         click
-        v-show="!showFriendInfoCard"
         class="list"
       >
         <div
           class="user-list"
-          v-show="currentPage === 'friend'"
+          v-show="currentPage === 'friend' && !showFriendInfoCard"
           @click.stop="openFriendInfoCard($event)"
         >
           <base-user-item
@@ -34,7 +33,11 @@
             :user-info="value"
           />
         </div>
-        <div class="chat-list" v-show="currentPage === 'message'">
+        <div
+          class="chat-list"
+          v-show="currentPage === 'message'"
+          @click.stop="chatClickHandle($event)"
+        >
           <base-user-item
             v-for="(item) in chats.notHasAcceptRecord"
             :key="item.account"
@@ -57,7 +60,10 @@
         />
         <div class="user-link" v-show="showFriendInfoCard && currentPage === 'friend'"></div>
       </div>
-      <search-box class="search" v-show="!showFriendInfoCard"/>
+      <search-box
+        class="search"
+        v-show="!showFriendInfoCard && currentPage === 'friend'"
+      />
     </div>
   </div>
 </template>
@@ -127,7 +133,19 @@ export default {
       console.log(currentFriendInfoCard.value);
       showFriendInfoCard.value = true;
     }
-    // 搜索相关
+    // 聊天相关
+    function startChat(account) {
+      store.commit('friendChatModule/setChatAccount', account);
+      store.commit('friendChatModule/setIsShowChatCard', true);
+    }
+    function chatClickHandle(event) {
+      const target = event.target.closest('.chat-user-item-wrapper');
+      if (!target) {
+        return;
+      }
+      const { account } = target.dataset;
+      startChat(account);
+    }
     return {
       tabArr,
       changeCurrentPage,
@@ -139,6 +157,7 @@ export default {
       showFriendInfoCard,
       currentFriendInfoCard,
       userItemType,
+      chatClickHandle,
     };
   },
 };
@@ -175,7 +194,7 @@ export default {
       display: flex;
       flex-direction: column;
       height: calc(100% - 69px);
-
+      position: relative;
       .list {
         flex: 1;
       }
@@ -190,6 +209,7 @@ export default {
       }
       .user-info-card {
         .user-link {
+          height: 40px;
           display: flex;
           justify-content: space-around;
         }

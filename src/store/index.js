@@ -2,6 +2,7 @@ import { createStore } from 'vuex';
 import storage from 'assets/js/tools/storage';
 import { socketStatusCode } from 'assets/js/model/constants';
 import friendInfoModule from './friendInfoModule';
+import friendChatModule from './friendChatModule';
 
 const store = createStore({
   state: {
@@ -52,6 +53,7 @@ const store = createStore({
   },
   modules: {
     friendInfoModule,
+    friendChatModule,
   },
 });
 

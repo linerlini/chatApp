@@ -3,7 +3,7 @@
     <div class="user-icon"><img src="~public/images/usericon.jpg" alt=""></div>
     <div class="user-chat-info">
       <p class="user-name">{{userInfo.name}}</p>
-      <p class="chat-info">{{chatInfo.message}}</p>
+      <p class="chat-info">{{chatInfo.message || chatInfo}}</p>
     </div>
     <div class="user-status" @click.stop="checkApplyRecord($event)">
       <div class="apply" v-if="itemType === userItemType.USER_APPLY">
@@ -38,8 +38,11 @@
         </div>
       </div>
       <div class="message" v-if="itemType === userItemType.USER_MESSAGE">
-        <p class="message-time">{{chatInfo.createTime}}</p>
-        <p class="not-accept-message-account"></p>
+        <p class="message-time">{{timeStr}}</p>
+        <p
+          class="not-accept-message-account"
+          v-show="userInfo.notAcceptWordCount !== 0"
+        >{{userInfo.notAcceptWordCount}}</p>
       </div>
     </div>
   </div>
@@ -48,6 +51,7 @@
 <script>
 import { computed } from 'vue';
 import { userItemType, userRelationship, handleFriendApply } from 'assets/js/model/constants';
+import { formatTimeStr } from 'assets/js/tools/timeTool';
 
 export default {
   components: {},
@@ -62,12 +66,17 @@ export default {
   },
   emits: ['handle-friendship'],
   setup(props, context) {
+    // 计算显示什么文本
     const chatInfo = computed(() => {
       if (props.itemType === userItemType.USER_MESSAGE) {
         return props.userInfo.chats[props.userInfo.chats.length - 1];
       }
       return props.userInfo.signature;
     });
+    let timeStr = null;
+    if (props.itemType === userItemType.USER_MESSAGE) {
+      timeStr = computed(() => formatTimeStr(chatInfo.value.createTime));
+    }
     // 接受或者拒绝好友申请
     function checkApplyRecord(event) {
       const target = event.target.closest('.apply > div');
@@ -96,6 +105,7 @@ export default {
       userRelationship,
       userItemType,
       checkApplyRecord,
+      timeStr,
     };
   },
 };
@@ -162,6 +172,28 @@ export default {
         flex-direction: column;
         justify-content: space-around;
         height: 100%;
+      }
+
+      .message {
+        display: flex;
+        padding: 10px;
+        flex-direction: column;
+        align-items: center;
+        height: 100%;
+        .not-accept-message-account {
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          color: white;
+          background: #cc163a;
+          text-align: center;
+          line-height: 20px;
+          font-size: 12px;
+          margin-top: auto;
+        }
+        .message-time {
+          margin-bottom: auto;
+        }
       }
     }
   }

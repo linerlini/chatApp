@@ -4,6 +4,7 @@ import store from 'store';
 const Login = () => import('views/login/Login.vue');
 const HappyPage = () => import('views/happyPage/HappyPage.vue');
 const FriendsPage = () => import('views/friendlistpage/FriendsPage.vue');
+const Test = () => import('views/test.vue');
 
 const routes = [
   {
@@ -33,6 +34,11 @@ const routes = [
     meta: {
       requireAuth: true,
     },
+  },
+  {
+    path: '/test',
+    name: 'test',
+    component: Test,
   },
 ];
 

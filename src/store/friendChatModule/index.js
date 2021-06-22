@@ -1,15 +1,19 @@
-import FriendChat from "assets/js/model/friendChat";
-
 const store = {
-    state: {
-        chatRecords: {},
+  state: {
+    chatAccount: -1, // 初始化
+    isShowChatCard: false,
+  },
+  mutations: {
+    setChatAccount(state, account) {
+      if (account === null || !account) {
+        return;
+      }
+      state.chatAccount = account;
     },
-    mutations: {
-        setChatRecords(state, records) {
-            state.chatRecords = records;
-        }
+    setIsShowChatCard(state, value) {
+      state.isShowChatCard = value;
     },
-    actions: {
-        initChatRecords({ state })
-    }
-}
+  },
+  namespaced: true,
+};
+export default store;
