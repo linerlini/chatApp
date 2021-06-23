@@ -1,37 +1,21 @@
-import { io } from 'socket.io-client';
-import { axiosBaseOptions } from '@/config';
 import store from 'store';
-import { socketStatusCode } from '../model/constants';
+import { socketStatusCode } from 'assets/js/model/constants';
 
-function connect(tk, account) {
-  const token = tk || store.state.token;
-  const socket = io(axiosBaseOptions.baseURL, {
-    path: '/chat',
-    auth: {
-      token,
-    },
-    query: {
-      account,
-      device: 0,
-    },
-  });
-  store.commit('setSocket', socket);
-  socket.on('connect', () => {
-    store.commit('changeSocketStatus', socketStatusCode.CONNECT);
-    console.log('connect successfully');
-  });
-  socket.on('new-device-connect', (device) => {
-    if (+device === 0) {
-      store.commit('changeSocketStatus', socketStatusCode.LOGIN_IN_OTHER_DEVICE);
-    }
-  });
-  socket.on('connect_error', (err) => {
+function connectWebSocket() {
+  const socket = new WebSocket('ws://localhost:5001/chat');
+  socket.onopen = function open(e) {
+    console.log(e);
+    socket.send('hello server');
+    store.commit('setSocket', socket);
+    store.commit('changeSocketStatus', socketStatusCode.OK);
+  };
+  socket.onmessage = function messageHandle(message) {
+    console.log(message);
+  };
+  socket.onerror = function errorHandle(err) {
     console.log(err);
+    store.commit('setSocket', null);
     store.commit('changeSocketStatus', socketStatusCode.CONNECT_ERROR);
-  });
-  socket.on('islogined-friend', () => {
-    console.log('isloginedFriends');
-  });
+  };
 }
-
-export default connect;
+export default connectWebSocket;

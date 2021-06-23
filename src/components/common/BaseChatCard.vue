@@ -13,7 +13,12 @@
     </div>
     <scroll class="message-wrapper">
       <div class="chat-main">
-        <base-message-item/>
+        <base-message-item
+          v-for="(item) in userInfo.chats"
+          :key="item.createTime"
+          :message="item"
+          :name="item.isSend ? myName : userInfo.name"
+        />
       </div>
     </scroll>
     <div class="chat-footer">
@@ -51,6 +56,8 @@ export default {
   emits: ['close-chat'],
   setup(props, context) {
     const store = useStore();
+    // 获取自己的用户名
+    const myName = computed(() => store.state.name);
     const friends = computed(() => {
       let result = {};
       store.state.friendInfoModule.friends.forEach((group) => {
@@ -58,6 +65,7 @@ export default {
       });
       return result;
     });
+    // 获取当前聊天对象的信息
     const userInfo = computed(() => {
       const account = store.state.friendChatModule.chatAccount;
       if (friends.value[account]) {
@@ -66,10 +74,12 @@ export default {
       }
       return FriendInfo.createNewFriend();
     });
+    // 关闭聊天框
     function closeChat() {
       context.emit('close-chat');
     }
     return {
+      myName,
       userInfo,
       closeChat,
     };
