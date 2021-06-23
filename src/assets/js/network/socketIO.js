@@ -66,6 +66,7 @@ class WebSocketClass {
       // 把数据传给回调函数，并执行回调
       if (response.type === wsEvents.PING_PONG && response.data === 'pong') {
         this.pingPong = 'pong'; // 服务器端返回pong,修改pingPong的状态
+        console.log('pingpong');
         return;
       }
       this.msgCallback(response);
@@ -137,10 +138,4 @@ class WebSocketClass {
     return this.ws.close();
   }
 }
-
-const ws = new WebSocketClass({
-  url: 'ws://localhost:5001/chat',
-  name: 'test',
-  msgCallback: (message) => console.log(message),
-});
-export default ws;
+export default WebSocketClass;

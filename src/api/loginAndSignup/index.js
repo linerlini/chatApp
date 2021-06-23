@@ -35,6 +35,7 @@ async function register({ account, password, name }) {
     });
     return result;
   } catch (err) {
+    console.log(err);
     console.log('register err');
     return Promise.reject(err);
   }

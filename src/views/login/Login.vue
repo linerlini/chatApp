@@ -41,7 +41,7 @@ import dialogFunc from 'components/content/confirmDialog/tool';
 import { dialogShowType } from 'assets/js/model/constants';
 import { login, register, loginRefresh } from 'api/loginAndSignup';
 import storage from 'assets/js/tools/storage';
-import ws from 'assets/js/network/socketIO';
+import initWebSocket from 'api/socket/initSocket';
 import changeLoginOrSignup from './tools/changeLoginOrSignup';
 
 export default {
@@ -72,6 +72,7 @@ export default {
       word,
     }) {
       // 保存登录的用户信息
+      console.log(account.value);
       store.dispatch('loginInit', {
         account: account.value,
         password: password.value,
@@ -91,7 +92,7 @@ export default {
         groups,
       });
       // 连接websocket
-      ws.connect();
+      const ws = initWebSocket(account.value);
       store.commit('setSocket', ws);
       router.push({
         name: 'welcome',
@@ -148,15 +149,12 @@ export default {
             account: account.value,
           });
           if (result.registerStatus) {
-            loginSuccess({
-              token: result.token,
-              groups: result.groups,
-              groupNames: result.groupNames,
-            });
+            loginSuccess(result);
           } else {
             registerError('account already exists');
           }
         } catch (err) {
+          console.log(err);
           registerError('register error', err);
         }
       }

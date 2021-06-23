@@ -7,6 +7,7 @@ class Friend {
     chats = [],
     groupIndex,
     notAcceptWordCount,
+    loginStatus,
   }) {
     this.name = name;
     this.account = account;
@@ -15,6 +16,7 @@ class Friend {
     this.relationship = relationship;
     this.groupIndex = groupIndex;
     this.notAcceptWordCount = notAcceptWordCount || 0;
+    this.loginStatus = loginStatus;
   }
 }
 Friend.createNewFriend = function createNewFriend() {

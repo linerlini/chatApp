@@ -38,6 +38,7 @@ const store = createStore({
       state.socket = newSocket;
     },
     changeSocketStatus(state, code) {
+      console.log('hhh');
       state.socketStatusCode = code;
     },
   },
