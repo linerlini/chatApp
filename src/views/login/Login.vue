@@ -41,7 +41,7 @@ import dialogFunc from 'components/content/confirmDialog/tool';
 import { dialogShowType } from 'assets/js/model/constants';
 import { login, register, loginRefresh } from 'api/loginAndSignup';
 import storage from 'assets/js/tools/storage';
-import connectWebSocket from 'assets/js/network/socketIO';
+import ws from 'assets/js/network/socketIO';
 import changeLoginOrSignup from './tools/changeLoginOrSignup';
 
 export default {
@@ -91,7 +91,8 @@ export default {
         groups,
       });
       // 连接websocket
-      connectWebSocket();
+      ws.connect();
+      store.commit('setSocket', ws);
       router.push({
         name: 'welcome',
       });

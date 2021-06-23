@@ -34,6 +34,11 @@ const socketStatusCode = {
   LOGIN_IN_OTHER_DEVICE: 2,
   CONNECT_ERROR: 3,
   NO_CONNECT: 4,
+  RETRYING: 5,
+};
+
+const wsEvents = {
+  PING_PONG: 'pingpong',
 };
 
 export {
@@ -43,4 +48,5 @@ export {
   handleFriendApply,
   funcName,
   socketStatusCode,
+  wsEvents,
 };

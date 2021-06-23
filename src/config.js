@@ -6,6 +6,12 @@ const axiosBaseOptions = {
   },
 };
 
+const socketBaseOptions = {
+  url: '/chat',
+  pingpongTime: 10000,
+  retryCount: 5,
+};
+
 const funcName = {
   ALL_FRIEND_PAGE: 0,
   ADD_FRIEND_PAGE: 1,
@@ -15,4 +21,5 @@ const funcName = {
 export {
   axiosBaseOptions,
   funcName,
+  socketBaseOptions,
 };
