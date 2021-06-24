@@ -240,6 +240,7 @@ export default {
         successInfo.value = 'add success';
         showType.value = dialogShowType.OK;
         user.value.relationship = userRelationship.APPLYING;
+        user.value.groupIndex = groupIndex;
         store.dispatch('friendInfoModule/handleFriendApply', user.value);
       } else {
         errorInfo.value = 'add error';

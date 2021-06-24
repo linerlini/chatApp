@@ -72,7 +72,6 @@ export default {
       word,
     }) {
       // 保存登录的用户信息
-      console.log(account.value);
       store.dispatch('loginInit', {
         account: account.value,
         password: password.value,

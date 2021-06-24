@@ -1,6 +1,6 @@
 import { createStore } from 'vuex';
 import storage from 'assets/js/tools/storage';
-import { socketStatusCode } from 'assets/js/model/constants';
+import { socketStatusCode, loginStatusType } from 'assets/js/model/constants';
 import friendInfoModule from './friendInfoModule';
 import friendChatModule from './friendChatModule';
 
@@ -10,7 +10,7 @@ const store = createStore({
     name: '',
     signature: '',
     groupNames: [],
-    loginStatus: false,
+    loginStatus: loginStatusType.OFFLINE,
     token: storage.get('user') && storage.get('user').token,
     socket: null,
     sockeStatusCode: socketStatusCode.NO_CONNECT,
@@ -38,7 +38,6 @@ const store = createStore({
       state.socket = newSocket;
     },
     changeSocketStatus(state, code) {
-      console.log('hhh');
       state.socketStatusCode = code;
     },
   },
@@ -50,6 +49,7 @@ const store = createStore({
       commit('setToken', payload.token);
       commit('setGroupNames', payload.groupNames);
       commit('setSignature', payload.signature);
+      commit('setLoginStatus', loginStatusType.ONLINE);
     },
   },
   modules: {

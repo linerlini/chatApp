@@ -22,7 +22,7 @@
       </div>
     </scroll>
     <div class="chat-footer">
-      <div class="chat-action-container">
+      <div class="chat-action-container" @click="sendMessageButtonClickHandle($event)">
         <button class="select-biaoqing">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-biaoqing"></use>
@@ -35,7 +35,7 @@
         </button>
       </div>
       <div class="chat-input">
-        <textarea rows="1"></textarea>
+        <textarea rows="1" v-model="inputText"></textarea>
       </div>
     </div>
   </div>
@@ -43,10 +43,12 @@
 
 <script>
 import { useStore } from 'vuex';
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import Scroll from 'components/common/Scroll.vue';
 import BaseMessageItem from 'components/common/BaseMessageItem.vue';
 import FriendInfo from 'assets/js/model/friendInfo';
+import FriendChat from 'assets/js/model/friendChat';
+import { sendMessage } from 'api/chat';
 
 export default {
   components: {
@@ -56,8 +58,11 @@ export default {
   emits: ['close-chat'],
   setup(props, context) {
     const store = useStore();
+    // 聊天信息
+    const inputText = ref('hello world');
     // 获取自己的用户名
     const myName = computed(() => store.state.name);
+    const myAccount = computed(() => store.state.account);
     const friends = computed(() => {
       let result = {};
       store.state.friendInfoModule.friends.forEach((group) => {
@@ -65,23 +70,61 @@ export default {
       });
       return result;
     });
-    // 获取当前聊天对象的信息
-    const userInfo = computed(() => {
-      const account = store.state.friendChatModule.chatAccount;
-      if (friends.value[account]) {
-        console.log(friends.value[account]);
-        return friends.value[account];
+    // 当前聊天对象的信息
+    const userInfo = ref(FriendInfo.createNewFriend());
+    // 聊天对象更改，修改对应数据
+    watch(() => store.state.friendChatModule.chatAccount, (value, preValue) => {
+      if (value === preValue) {
+        return;
       }
-      return FriendInfo.createNewFriend();
+      if (friends.value[value]) {
+        console.log(friends.value[value]);
+        userInfo.value = friends.value[value];
+        inputText.value = '';
+      } else {
+        console.log('user account wrong');
+      }
     });
     // 关闭聊天框
     function closeChat() {
       context.emit('close-chat');
     }
+    // 获取ws
+    const ws = computed(() => store.state.socket);
+    // 发送信息
+    function sendMessageButtonClickHandle(event) {
+      const target = event.target.closest('.send-message');
+      if (!target) {
+        return;
+      }
+      const result = sendMessage({
+        fromAccount: myAccount.value,
+        toAccount: userInfo.value.account,
+        message: inputText.value,
+        ws: ws.value,
+      });
+      // 判断发送函数是否执行成功
+      if (!result) {
+        console.log('???');
+      } else {
+        // 添加到本地聊天记录
+        store.commit('friendInfoModule/addChatRecord', {
+          account: userInfo.value.account,
+          message: new FriendChat({
+            message: inputText.value,
+            isSend: 1,
+            createTime: new Date(),
+          }),
+        });
+        inputText.value = '';
+      }
+    }
     return {
       myName,
       userInfo,
       closeChat,
+      inputText,
+      sendMessageButtonClickHandle,
     };
   },
 };

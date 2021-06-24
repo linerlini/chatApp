@@ -19,6 +19,7 @@ const store = {
       state.friendHandleRecord = payload;
     },
     addFriend(state, { user, groupIndex }) {
+      console.log(groupIndex);
       state.friends[groupIndex][user.account] = new Friend({
         groupIndex,
         ...user,
@@ -29,6 +30,26 @@ const store = {
     },
     addHandleing(state, user) {
       state.friendHandleing[user.account] = user;
+    },
+    addChatRecord(state, { account, message }) {
+      state.friends.some((group) => {
+        if (group[account]) {
+          const friend = group[account];
+          friend.chats.push(message);
+          return true;
+        }
+        return false;
+      });
+    },
+    changeFriendLoginStatus(state, { account, loginStatus }) {
+      state.friends.some((group) => {
+        if (group[account]) {
+          const friend = group[account];
+          friend.loginStatus = loginStatus;
+          return true;
+        }
+        return false;
+      });
     },
   },
   actions: {
@@ -85,10 +106,11 @@ const store = {
       const user = newFriendHandleing[account];
       delete newFriendHandleing[user.account];
       user.relationship = handleResult;
+      console.log(user);
       if (handleResult === userRelationship.FRIEND) {
         commit('addFriend', {
           user,
-          groupIndex,
+          groupIndex: groupIndex || user.groupIndex, // 直接收到好友申请结果
         });
       }
       commit('addHandleRecord', user);
